@@ -23,9 +23,17 @@ writes = []
 async function traverse(){
   for await (const profile of Profile.find({date: {$gte: new Date('2021-01-01T00:00:00Z'), $lt: new Date('2021-01-02T00:00:00Z')}}).limit(42)) {
     p = profile.toObject()
-    dx = new Date(p.date)
-    dx.setFullYear(9999)
-    p.date = dx
+
+    // optional `BASIN` replaced by mandatory `basin`
+    if(p.hasOwnProperty('BASIN')){
+      p.basin = p.BASIN
+      delete p.BASIN
+    } else {
+      p.basin = NaN
+    }
+    // data_type
+    p.data_type = 'UNDEFINED'
+
     writes.push(Profilex.insertMany([p]))
   }
 
